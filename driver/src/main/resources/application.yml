@@ -1,0 +1,17 @@
+spring:
+  thymeleaf:
+    mode: LEGACYHTML5
+    cache: false
+    
+## Logging
+logging:
+  level:
+    web: INFO
+    # Squelch expected error messages like: java.lang.IllegalStateException: This consumer has already been closed.
+    org.apache.kafka.streams.processor.internals.StreamThread: WARN
+    # Enable for debugging if need be
+    #org.apache.kafka.streams: DEBUG, stdout
+    #Enable info for Microservices
+    io.confluent.examples.streams.microservices: INFO, stdout
+    # Enable for debugging if need be
+    #io.confluent: DEBUG, stdout

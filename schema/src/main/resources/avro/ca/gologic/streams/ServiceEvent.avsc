@@ -1,0 +1,50 @@
+{
+  "type": "record",
+  "name": "ServiceEvent",
+  "namespace": "ca.gologic.streams.schema",
+  "fields": [
+    {
+      "name": "subject",
+      "type": "string"
+    },
+    {
+      "name": "service",
+      "type": "string"
+    },
+    {
+      "name": "action",
+      "type": "string"
+    },
+    {
+      "name": "version",
+      "type": "string"
+    },
+    {
+      "name": "env",
+      "type": "string"
+    },
+    {
+      "name": "producer",
+      "type": "string"
+    },
+    {
+      "name": "story",
+      "type": "string"
+    },
+    {
+      "name": "previousEventId",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "rootEventId",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "count",
+      "type": "long",
+      "default": 1
+    }
+  ]
+}

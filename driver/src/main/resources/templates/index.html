@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+<title>DevOps Kafka Demo</title>
+
+<link rel="icon" href="gologic.ico" />
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="dist/css/adminlte.css" />
+<!-- Google Font: Source Sans Pro -->
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet" />
+</head>
+<body class="hold-transition sidebar-mini sidebar-collapse">
+	<div class="wrapper">
+
+		<!-- Main Sidebar Container -->
+		<aside class="main-sidebar sidebar-dark-primary elevation-4">
+			<!-- Brand Logo -->
+			<a href="" class="brand-link"> <img src="https://www.gologic.ca/wp-content/uploads/2018/02/Logo_Power_Point.png" class="brand-image elevation-3"> <span class="brand-text font-weight-light">DevOps Kafka</span>
+			</a>
+
+			<!-- Sidebar -->
+			<div class="sidebar">
+
+				<!-- Sidebar Menu -->
+				<nav class="mt-2">
+					<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+						<li class="nav-item"><a href="#" class="nav-link"> <i class="nav-icon fa fa-th"></i>
+								<p>Demo</p>
+						</a></li>
+					</ul>
+				</nav>
+				<!-- /.sidebar-menu -->
+			</div>
+			<!-- /.sidebar -->
+		</aside>
+
+		<!-- Content Wrapper. Contains page content -->
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<div class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1 class="m-0 text-dark">DevOps & Kafka - Demo</h1>
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.container-fluid -->
+			</div>
+			<!-- /.content-header -->
+
+			<!-- Main content -->
+			<div class="content">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-md-3 col-sm-6 col-xs-12">
+							<div class="info-box">
+								<span class="info-box-icon bg-info"><i class="fa fa-envelope-o"></i></span>
+
+								<div class="info-box-content">
+									<div class="row">
+										<div class="col-md-6">
+											<span class="info-box-text">Delivery events</span>
+											<div class="row small">
+												&nbsp;<span id="read-count-request">0 </span> &nbsp; Requests
+											</div>
+											<div class="row small">
+												&nbsp;<span id="read-count-response">0 </span> &nbsp; Responses
+											</div>
+										</div>
+										<div class="col-md-6">
+											<button class="btn btn-app" id="btn-write">
+												<i class="fa fa-plus"></i> Add next database
+											</button>
+											<i id="producer-status" class="fa pull-right"></i>
+										</div>
+									</div>
+								</div>
+								<!-- /.info-box-content -->
+							</div>
+							<!-- /.info-box -->
+						</div>
+					</div>
+					<div class="row">
+
+						<!-- REQUEST -->
+						<div class="col-lg-6">
+							<div class="card">
+								<div class="card-header">
+									<h5 class="m-0">
+										Request Event Topic <i class="fa fa-spinner fa-spin pull-right" id="icon-read-request"> </i>
+										<button class="btn btn-primary btn-sm btn-info pull-right" id="btn-read-request">Refresh</button>
+									</h5>
+
+								</div>
+								<div class="card-body">
+
+									<table class="table table-bordered table-condensed small" id="consumer-request">
+									</table>
+								</div>
+							</div>
+
+						</div>
+
+						<!-- RESPONSE -->
+						<div class="col-lg-6">
+							<div class="card">
+								<div class="card-header">
+									<h5 class="m-0">
+										Response Event Topic <i class="fa fa-spinner fa-spin pull-right" id="icon-read-response"> </i>
+										<button class="btn btn-primary btn-sm btn-info pull-right" id="btn-read-response">Refresh</button>
+									</h5>
+
+								</div>
+								<div class="card-body">
+
+									<table class="table table-bordered small" id="consumer-response">
+									</table>
+								</div>
+							</div>
+
+						</div>
+						<!-- /.col-md-6 -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.container-fluid -->
+			</div>
+			<!-- /.content -->
+		</div>
+		<!-- /.content-wrapper -->
+
+		<!-- Main Footer -->
+		<footer class="main-footer">
+			<!-- Default to the left -->
+			<strong>Gologic &copy; 2019 <a href="http://www.gologic.ca">Gologic</a>.
+			</strong> All rights reserved.
+		</footer>
+	</div>
+	<!-- ./wrapper -->
+
+	<!-- REQUIRED SCRIPTS -->
+
+	<!-- jQuery -->
+	<script src="plugins/jquery/jquery.min.js"></script>
+	<!-- Bootstrap 4 -->
+	<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<!-- AdminLTE App -->
+	<script src="dist/js/adminlte.js"></script>
+
+	<script>
+		$(document).ready(function() {
+			readAll();
+			setInterval(function() {
+				readAll();
+			}, 3000);
+		});
+
+		$("#btn-read-request").click(function() {
+			readTopic("/api/requests", "request");
+		});
+		$("#btn-read-response").click(function() {
+			readTopic("/api/responses", "response");
+		});
+
+		$("#btn-write").click(function() {
+			console.debug("Produce a message");
+			$("#producer-status").addClass("fa-spinner fa-spin");
+			$("#producer-status").removeClass("fa-check");
+
+			$.post("/api/write").done(function(msg) {
+				$("#producer-status").removeClass("fa-spinner fa-spin");
+				$("#producer-status").addClass("fa-check");
+				console.log("Success");
+			}).fail(function(xhr, status, error) {
+				$("#producer-status").removeClass("fa-spinner fa-spin");
+				$("#producer-status").addClass("fa-fa-exclamation-triangle");
+				console.log("Error");
+			});
+		});
+
+		function readAll() {
+			readTopic("/api/requests", "request");
+			readTopic("/api/responses", "response");
+		}
+
+		function readTopic(api, htmlId) {
+			console.info("Consume messages from " + api + ", " + htmlId);
+
+			$.getJSON(api, function(data) {
+
+				$("#read-count-" + htmlId).html(data.length);
+
+				if (data.length == 0)
+					return;
+
+				var items = [];
+				var keys = [];
+				var rows = [];
+
+				// Loop throught each message
+				$.each(data, function(key, val) {
+					// define Table Row indexed by key name instead of index
+					var row = {};
+
+					// Loop throught each attributes of current message
+					$.each(val, function(k, v) {
+
+						// Add key to structure if not exists
+						if ($.inArray(k, keys) == -1 && 
+								k != "count" &&
+								k != "previousEventId" &&
+								k != "rootEventId"
+								) {
+							keys.push(k);
+						}
+
+						// Define Table Row Object attributes (class, icon, value)
+						valObj = customizeAttribute(k, v);
+
+						// Add value object to row object indexed by key
+						row[k] = valObj;
+					});
+					rows.push(row);
+				});
+
+				// reverse rows to have latest on top
+				rows.reverse();
+
+				// Build Header Row
+				var header = "<tr>";
+				$.each(keys, function(index, value) {
+					header += "<th>" + value + "</th>";
+				});
+				header += "</tr>";
+				$("#consumer-" + htmlId).html(header);
+
+				// Build HTML Rows
+				$.each(rows, function(index, row) {
+					var html = "<tr>";
+					// Loop through header key to insert value inside row
+					$.each(keys, function(keyIndex, keyName) {
+						// Pick value from row by keyName to build html row, if key not exists insert an empty cell
+						if (keyName in row) {
+							valObj = row[keyName];
+							html += "<td class=\""+valObj.className+"\"><i class=\"fa "+valObj.icon+"\"></i> " + valObj.value + "</td>";
+						} else {
+							html += "<td></td>";
+						}
+					});
+					html += "</tr>";
+					$("#consumer-" + htmlId).append(html);
+				});
+
+			});
+		}
+
+		/**
+		 *  Allow customize icon, className of each message attribute
+		 */
+		function customizeAttribute(k, v) {
+      var valObj = {}
+      valObj.icon = "";
+      valObj.className = "";
+      valObj.key = k;
+      valObj.value = v;
+      
+			if (k == "subject" && v == "application") {
+				valObj.icon = "fa-cube text-warning";
+				valObj.className = "text-bold text-nowrap";
+			}
+			if (k == "subject" && v == "test") {
+				valObj.icon = "fa-bug text-success";
+				valObj.className = "text-bold text-nowrap";
+			}
+			if (k == "subject" && v == "database") {
+				valObj.icon = "fa-database text-danger";
+				valObj.className = "text-bold text-nowrap";
+			}
+			if (k == "producer") {
+				valObj.icon = "fa-users";
+				valObj.className = "text-bold text-nowrap";
+			}
+			if (k == "action" || k == "env" || k == "service") {
+				valObj.icon = "";
+				valObj.className = "text-nowrap";
+			}
+			if (k == "env" && v == "dev") {
+				valObj.className = "bg-warning text-nowrap";
+			}
+			if (k == "env" && v == "staging") {
+				valObj.className = "bg-info text-nowrap";
+			}
+			if (k == "env" && v == "production") {
+				valObj.className = "bg-success text-nowrap";
+			}
+			return valObj;
+		}
+	</script>
+
+</body>
+</html>

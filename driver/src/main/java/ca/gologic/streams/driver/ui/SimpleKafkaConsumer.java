@@ -73,7 +73,7 @@ public class SimpleKafkaConsumer {
         ServiceEvent serviceEvent = record.value();
         ServiceEventVO serviceEventVO = SchemaUtils.getServiceEventVO(serviceEvent);
 
-        SimpleKafkaProducer.latestServiceEvent = serviceEventVO;
+        SimpleKafkaProducer.setLatestVersionServiceEvent(serviceEventVO);
         
         array.add(serviceEventVO);
       }

@@ -216,7 +216,7 @@ public class SchemaUtils {
 				nextVersion = version.replaceAll("-snapshot", "-rc");
 				break;
 			case "production":
-				nextVersion = version.replaceAll("-rc", "");
+				nextVersion = version.replaceAll("-snapshot", "").replaceAll("-rc", "");
 				break;
 			case "dev":
 				nextVersion = version.replaceAll("-snapshot", "").replaceAll("-rc", "") + "-snapshot";
@@ -244,27 +244,27 @@ public class SchemaUtils {
     
     public static String getNextMajorVersionString(String version)
     {
-    	return getMajorVersion( getMajorVersion(version) + 1 );
+    	return getMajorVersionString( getMajorVersion(version) + 1 );
     }
     
-    public static String getMajorVersion(double dVersion)
+    public static String getMajorVersionString(int dVersion)
     {
   	  return String.valueOf( ((int)dVersion) );
     }
     
-    public static double getMajorVersion(String version)
+    public static int getMajorVersion(String version)
     {
   	  String majorVersion = getNextVersion( version, "production" );
-  	  double dversion = 1d;
+  	  int iVersion = 1;
   	  
   	  try {
-  		dversion = Double.parseDouble( majorVersion );
+  		iVersion = (int)Double.parseDouble( majorVersion );
   	  }catch(NumberFormatException e)
   	  {
   		  e.printStackTrace();
   	  }
   	
-  	  return dversion;
+  	  return iVersion;
     }
     
     public static void sleep()

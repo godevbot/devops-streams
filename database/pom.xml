@@ -37,7 +37,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<artifactId>logback-classic</artifactId>
 			<groupId>ch.qos.logback</groupId>
-			<version>1.1.11</version>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.confluent</groupId>
